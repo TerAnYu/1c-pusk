@@ -1,0 +1,56 @@
+ARG REGISTRY= \
+    OS_TAG=debian:trixie-slim
+
+FROM "${REGISTRY}${OS_TAG}"
+
+ARG OC_PUSK_VERSION \
+    OC_PUSK_TYPE=PUSK
+
+LABEL org.opencontainers.image.authors="Teremshonok Anton <gitrepo@teranyu.com>" \
+    version="${OC_PUSK_TYPE}:${OC_PUSK_VERSION}"
+
+VOLUME [ "/var/opt/1C/pusk/data" ]
+VOLUME [ "/var/opt/1C/pusk/log" ]
+
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+
+RUN apt update && apt install -yq --no-install-recommends \
+    procps locales default-jdk curl libsecret-1-0 && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*; \
+    echo "ru_RU.UTF-8 UTF-8" >> /etc/locale.gen && \
+    locale-gen && \
+    update-locale LANG=ru_RU.UTF-8
+
+ENV LANG=ru_RU.UTF-8 \
+    LANGUAGE=ru_RU:ru \
+    LC_ALL=ru_RU.UTF-8
+
+COPY ./install /install
+
+RUN groupadd -r grp1ce && useradd -r -g grp1ce -d /var/opt/1C/pusk -s /bin/bash usr1ce; \
+    set -eux; \
+    mkdir -p /var/opt/1C/pusk && \
+    chown usr1ce:grp1ce /var/opt/1C/pusk && \
+    chmod 777 /var/opt/1C/pusk; \
+    tar -zxvf /install/pusk.tgz -C /var/opt/1C/pusk && \
+    rm -f /install/pusk.tgz
+
+RUN cat > /usr/local/bin/systemctl << 'EOF'
+#!/bin/sh
+echo "There is no systemctl"
+exit 0
+EOF
+RUN chmod +x /usr/local/bin/systemctl
+
+ENV JAVA_HOME=/usr/lib/jvm/default-java
+
+ENV OC_PUSK_TYPE=${OC_PUSK_TYPE} \
+    OC_PUSK_VERSION=${OC_PUSK_VERSION}
+
+COPY --chown=usr1ce:grp1ce --chmod=766 [ "entrypoint.sh", "/" ]
+
+HEALTHCHECK --interval=30s --timeout=3s CMD /healthcheck.sh
+
+WORKDIR /opt/pusk
+
+ENTRYPOINT [ "/entrypoint.sh" ]

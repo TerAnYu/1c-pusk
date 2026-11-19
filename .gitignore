@@ -1,0 +1,27 @@
+# Secrets
+.env
+
+# Distribution archives (too large for GitHub)
+*.gz
+*.zip
+
+# Generated during build
+pusk/
+build/install/
+
+# Runtime data
+compose/data/
+compose/log/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Logs
+*.log
