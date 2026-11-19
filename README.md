@@ -120,11 +120,46 @@ docker-compose up -d
 
 Перед сборкой необходимо скачать и поместить в корень проекта:
 
-1. **Дистрибутив 1C-ПУСК** — `ite-pusk-*.tar.gz` (получите у поставщика)
+1. **Дистрибутив 1C-ПУСК** — `ite-pusk-*.tar.gz`
+   - Скачать с [it-expertise.ru/pusk](https://it-expertise.ru/pusk/#download)
+   - Прямая ссылка: `https://it-expertise.ru/pusk/ite-pusk-1.3.1.tar.gz`
 
-2. **Библиотеки 1С Java API** — [`java-api-8.3.11.zip`](https://its.1c.ru/db/files/1CITS/EXE/java-api-8.3.11/java-api-8.3.11.zip) или новее
+2. **Библиотеки 1С Java API** — `java-api-8.3.11.zip` или новее
    - Скачать с [ITS 1C](https://its.1c.ru/db/files/1CITS/EXE/java-api-8.3.11/java-api-8.3.11.zip)
    - Архив содержит вложенные zip-файлы (матрёшка), скрипт распаковывает их автоматически
+
+## Автоматическая сборка (GitHub Actions)
+
+Проект настроен на автоматическую сборку Docker-образа при создании тега `v*`.
+
+### Как использовать
+
+1. Создайте тег и push:
+   ```bash
+   git tag v1.3.1
+   git push origin v1.3.1
+   ```
+
+2. GitHub Actions автоматически:
+   - Скачает дистрибутив с it-expertise.ru
+   - Скачает библиотеки 1С Java API
+   - Соберёт Docker-образ
+   - Опубликует в GitHub Packages
+
+### Образы
+
+После сборки образы доступны в GitHub Packages:
+```bash
+docker pull ghcr.io/teranyu/1c-pusk:1.3.1
+docker pull ghcr.io/teranyu/1c-pusk:latest
+```
+
+### Ручной запуск
+
+Также можно запустить сборку вручную через GitHub UI:
+- Перейдите в **Actions** → **Build and Publish Docker Image**
+- Нажмите **Run workflow**
+- Укажите версию (например, `1.3.1`)
 
 ## Файлы конфигурации
 
