@@ -67,10 +67,17 @@ REGISTRY_PASSWORD=password
 
 ```bash
 cd compose
+docker-compose pull   # Скачать образ из GHCR
 docker-compose up -d
 ```
 
 Приложение будет доступно на `http://localhost:8080`.
+
+**Или используйте предсобраный образ напрямую:**
+```bash
+docker pull ghcr.io/teranyu/1c-pusk:latest
+docker run -d -p 8080:8080 --name 1cpusk ghcr.io/teranyu/1c-pusk:latest
+```
 
 ## Тестирование
 
